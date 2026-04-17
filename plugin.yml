@@ -1,0 +1,25 @@
+if($command->getName() === "kit"){
+    if(!$sender instanceof Player) return true;
+
+    $cooldown = 3600; // 1 hour
+    $time = time();
+
+    $config = $this->getConfig();
+    $kits = $config->get("kits", []);
+
+    $name = strtolower($sender->getName());
+
+    if(isset($kits[$name]) && ($time - $kits[$name]) < $cooldown){
+        $sender->sendMessage("§cYou must wait before using kit again!");
+        return true;
+    }
+
+    $sender->getInventory()->addItem(\pocketmine\item\VanillaItems::IRON_SWORD());
+    $sender->getInventory()->addItem(\pocketmine\item\VanillaItems::BREAD()->setCount(16));
+
+    $kits[$name] = $time;
+    $config->set("kits", $kits);
+    $config->save();
+
+    $sender->sendMessage("§aStarter kit received!");
+}
